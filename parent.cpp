@@ -26,8 +26,14 @@ int main(){
         return 1;
     } else if (pid == 0) {
         std::cout << "Child PID: " << getpid()<< std::endl;
-        dup2(file_fd, 0);
-        dup2(pipe1[1], 1);
+        if (dup2(file_fd, 0) == -1) {
+            perror("dup2 stdin");
+            return 1;
+        }
+        if (dup2(pipe1[1], 1) == -1) {
+            perror("dup2 stdout");
+            return 1;
+        }
         close(file_fd);
         close(pipe1[0]);
         close(pipe1[1]);

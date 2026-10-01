@@ -1,15 +1,17 @@
-#include <iostream>
-#include <string>
+#include <stdio.h>
 #include <fcntl.h>
-#include <cstdio>
 #include <unistd.h>
 #include <sys/wait.h>
 
-int main(){
-    std::string file_name;
-    std::cout << "Enter a file name" << std::endl;
-    std::cin >> file_name;
-    int file_fd = open(file_name.c_str(), O_RDONLY);
+int main(void) {
+    char file_name[256];
+    printf("Enter a file name\n");
+    fflush(stdout);
+    if (scanf("%255s", file_name) != 1) {
+        fprintf(stderr, "Invalid input\n");
+        return 1;
+    }
+    int file_fd = open(file_name, O_RDONLY);
     if (file_fd == -1) {
         perror("open");
         return 1;
@@ -25,7 +27,8 @@ int main(){
         perror("fork");
         return 1;
     } else if (pid == 0) {
-        std::cout << "Child PID: " << getpid()<< std::endl;
+        printf("Child PID: %d\n", getpid());
+        fflush(stdout);
         if (dup2(file_fd, 0) == -1) {
             perror("dup2 stdin");
             return 1;
@@ -41,14 +44,14 @@ int main(){
         perror("execl");
         return 1;
     } else {
-        std::cout << "Parent PID: " << getpid()<< std::endl;
+        printf("Parent PID: %d\n", getpid());
+        fflush(stdout);
         close(pipe1[1]);
         close(file_fd);
         char buf[256];
         ssize_t n;
-        while ((n = read(pipe1[0], buf, 256)) > 0){
+        while ((n = read(pipe1[0], buf, 256)) > 0) {
             write(1, buf, n);
-
         }
         if (n == -1) {
             perror("read");
@@ -57,4 +60,5 @@ int main(){
         int status;
         waitpid(pid, &status, 0);
     }
+    return 0;
 }

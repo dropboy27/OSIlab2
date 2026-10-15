@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <limits.h>
+#include <string.h>
 
 int main(void)
 {

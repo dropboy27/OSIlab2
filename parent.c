@@ -10,7 +10,7 @@ int main(void)
     char file_name[PATH_MAX];
     printf("Enter a file name\n");
     fflush(stdout);
-    
+
     if (fgets(file_name, sizeof(file_name), stdin) == NULL)
     {
         fprintf(stderr, "Invalid input\n");
@@ -63,9 +63,9 @@ int main(void)
         fflush(stdout);
         close(pipe1[1]);
         close(file_fd);
-        char buf[256];
+        char buf[4096];
         ssize_t n;
-        while ((n = read(pipe1[0], buf, 256)) > 0)
+        while ((n = read(pipe1[0], buf, 4096)) > 0)
         {
             write(1, buf, n);
         }
